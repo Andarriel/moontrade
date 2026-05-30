@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/client/">
+    <Project Path="client/Client.csproj" />
+  </Folder>
+  <Folder Name="/core/">
+    <Project Path="core/Core.csproj" />
+  </Folder>
+  <Folder Name="/shared/">
+    <Project Path="shared/Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/" />
+  <Folder Name="/tools/cli/">
+    <Project Path="tools/cli/Cli.csproj" />
+  </Folder>
+</Solution>
