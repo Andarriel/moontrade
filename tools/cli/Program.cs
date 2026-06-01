@@ -40,4 +40,7 @@ Action<Trade> onTrade = trade =>
 SubscriptionManager manager = new SubscriptionManager(onTrade);
 manager.Start(selectedPairs);
 
+CleanupWorker cleanup = new CleanupWorker(storage, 60_000);
+cleanup.Start();
+
 Thread.Sleep(Timeout.Infinite);
