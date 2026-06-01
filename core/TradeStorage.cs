@@ -18,7 +18,7 @@ public sealed class TradeStorage
     {
         lock (_lock)
         {
-            if (!store.TryGetValue(trade.Symbol, out Queue<Trade> queue))
+            if (!store.TryGetValue(trade.Symbol, out Queue<Trade>? queue))
             {
                 queue = new Queue<Trade>();
                 store[trade.Symbol] = queue;
@@ -32,7 +32,7 @@ public sealed class TradeStorage
     {
         lock (_lock)
         {
-            if (store.TryGetValue(symbol, out Queue<Trade> queue))
+            if (store.TryGetValue(symbol, out Queue<Trade>? queue))
             {
                 return queue.Count;
             }
