@@ -1,6 +1,12 @@
 ﻿using Cli;
 using Client;
 using Core;
+using Shared.win64;
+
+if (OperatingSystem.IsWindows())
+{
+    WindowsConsole.DisableQuickEdit();
+}
 
 BinanceRestClient rest = new BinanceRestClient();
 List<string> symbols = rest.GetSymbols();
