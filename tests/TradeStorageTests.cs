@@ -52,7 +52,7 @@ public class TradeStorageTests
         storage.Cleanup();
         Assert.Equal(100, storage.CountFor("BTCUSDT"));
     }
-
+    
     [Fact]
     public void StorageKeepsPairsIndependent()
     {

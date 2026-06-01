@@ -19,32 +19,52 @@ public sealed class BinanceWebSocketClient
 
     public void Run()
     {
-        ClientWebSocket ws = new ClientWebSocket();
-        Uri uri = new Uri($"wss://stream.binance.com:9443/ws/{_symbol.ToLower()}@trade");
-
-        ws.ConnectAsync(uri, CancellationToken.None).GetAwaiter().GetResult();
-
-        byte[] buffer = new byte[8192];
-
-        while (ws.State == WebSocketState.Open)
+        while (true)
         {
-            using MemoryStream ms = new MemoryStream();
-            WebSocketReceiveResult result;
-            do
+            try
             {
-                result = ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).GetAwaiter().GetResult();
-                if(result.MessageType == WebSocketMessageType.Close)
+                using ClientWebSocket ws = new ClientWebSocket();
+                Uri uri = new Uri($"wss://stream.binance.com:9443/ws/{_symbol.ToLower()}@trade");
+
+                ws.ConnectAsync(uri, CancellationToken.None).GetAwaiter().GetResult();
+
+                byte[] buffer = new byte[8192];
+
+                while (ws.State == WebSocketState.Open)
                 {
-                    return;
+                    using MemoryStream ms = new MemoryStream();
+                    WebSocketReceiveResult result;
+                    do
+                    {
+                        result = ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None).GetAwaiter().GetResult();
+
+                        if (result.MessageType == WebSocketMessageType.Close)
+                        {
+                            break;
+                        }
+                        
+                        ms.Write(buffer, 0, result.Count);
+                    } 
+                    while (!result.EndOfMessage);
+
+                    if (result.MessageType == WebSocketMessageType.Close)
+                    {
+                        break;
+                    }
+
+                    string message = Encoding.UTF8.GetString(ms.ToArray());
+
+                    Trade trade = ParseTrade(message);
+                    _onTrade(trade);
                 }
-                ms.Write(buffer, 0, result.Count);
-            } while (!result.EndOfMessage);
-
-            string message = Encoding.UTF8.GetString(ms.ToArray());
-
-            Trade trade = ParseTrade(message);
-            _onTrade(trade);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}. Reconnecting in 5 seconds...");
+            }
+            Thread.Sleep(5000);
         }
+        
     }
 
     private Trade ParseTrade(string message)
